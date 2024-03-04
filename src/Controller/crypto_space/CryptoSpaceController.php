@@ -32,5 +32,14 @@ class CryptoSpaceController extends AbstractController
         ]);
     }
 
+    #[Route('/crypto/space/p2p/add_post', name: 'app_crypto_space_p2p_add_post')]
+    public function addPost(): Response
+    {
+        
+        return $this->render('crypto_space/p2p_space/p2p.html.twig', [
+            'controller_name' => 'CryptoSpaceController',
+        ]);
+    }
+
 
 }

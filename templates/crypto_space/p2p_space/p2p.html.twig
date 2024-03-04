@@ -3,7 +3,170 @@
 {% block body %}
     <main id="main" class="main">
         <h1>p2p space</h1>
-        <p>Welcome to the p2p</p>
+        <p> trust and secure p2p exchange</p>
+        <button class="btn btn-primary" type="submit" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Post an offer</button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="post" novalidate id="postForm">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="amountField" class="form-label">Amount (ETH)</label>
+                                <input type="number" class="form-control" id="amountField" aria-describedby="amountError">
+                                <div id="amountError" class="invalid-feedback"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="emailField" class="form-label">Email (respect the email format)</label>
+                                <input type="email" class="form-control" id="emailField" aria-describedby="emailError">
+                                <div id="emailError" class="invalid-feedback"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="priceField" class="form-label">Price ($)</label>
+                                <input type="number" class="form-control" id="priceField" aria-describedby="priceError">
+                                <div id="priceError" class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" id="submitButton" class="btn btn-primary">Post</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Get the form elements
+            const amountField = document.getElementById('amountField');
+            const emailField = document.getElementById('emailField');
+            const priceField = document.getElementById('priceField');
+            const submitButton = document.getElementById('submitButton');
+
+
+            // Function to check if any field is empty and show error if needed
+            function checkFields() {
+                let isValid = true;
+
+                if (amountField.value.trim() === '') {
+                    isValid = false;
+                }
+
+                if (!isValidEmail(emailField.value.trim() || emailField.value.trim() === '')){
+                    isValid = false;
+                }
+
+                // Function to check if email is valid
+                function isValidEmail(email) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    return emailRegex.test(email);
+                }
+
+                if (priceField.value.trim() === '') {
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    submitButton.removeAttribute('disabled');
+                } else {
+                    submitButton.setAttribute('disabled', 'disabled');
+                }
+            }
+
+            const postForm = document.getElementById('postForm');
+            // Event listener for form submission
+            postForm.addEventListener('submit', (event) => {
+                event.preventDefault(); // Prevent default form submission
+                // Optionally, you can add additional checks here before submitting
+                submitForm();
+            });
+
+            // Function to submit the form
+            function submitForm() {
+                const formData = new FormData(postForm);
+                fetch('{{ path('app_crypto_space_p2p_add_post') }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Handle successful response
+                        console.log(data);
+                    })
+                    .catch(error => {
+                        // Handle error
+                        console.error('There was a problem with your fetch operation:', error);
+                    });
+            }
+
+            // Event listeners for input fields
+            amountField.addEventListener('input', checkFields);
+            emailField.addEventListener('input', checkFields);
+            priceField.addEventListener('input', checkFields);
+
+            // Check for form errors on page load
+            window.addEventListener('load', () => {
+                checkFields();
+            });
+
+
+
+        </script>
+        <br>
+        <br>
+        <h3>Offers</h3>
+        <div class="container">
+            <h5>My Posted Offers</h5>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Rate</th>
+                    <th scope="col">status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>12-12-2023 4:25</td>
+                    <td>3000 USDT</td>
+                    <td>3.3</td>
+                    <td>Sold</td>
+                </tr>
+                <tr>
+                    <td>12-12-2023 4:25</td>
+                    <td>3000 USDT</td>
+                    <td>3.3</td>
+                    <td>Available</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="container">
+            {% for i in 1..5 %}
+                <div class="card">
+                    <h5 class="card-header">posted in 12-12-2023 4:25</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">ahmed@crypto.com</h5>
+                       <div style="display: flex">
+                           <p class="card-text"> ahmed proposed a 3000 USDT with 3.3 rate</p>
+                           <a href="#" style="margin-left: 59%;background-color: #20a768;" class="btn btn-success">Buy</a>
+                       </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </main>
 
 {% endblock %}
