@@ -28,5 +28,9 @@
 	"homepage": "https://www.tiny.cloud/",
 	"bugs": {
 		"url": "https://github.com/tinymce/tinymce/issues"
+	},
+	"dependencies": {
+		"ganache-cli": "^6.12.2",
+		"web3": "^4.5.0"
 	}
 }

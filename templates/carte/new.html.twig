@@ -1,0 +1,15 @@
+{% extends 'clientdash/index.html.twig' %}
+
+{% block title %}New Carte{% endblock %}
+
+{% block body %}
+    <main id="main">
+        <h1>Create new Carte</h1>
+
+        {{ include('carte/_form.html.twig') }}
+<br>
+        <a class="btn btn-success" href="{{ path('app_carte_index') }}">back to list</a>
+    </main>
+{% endblock %}
+
+

@@ -50,4 +50,18 @@ class AccountRepository extends ServiceEntityRepository
         $account = $this->findOneBy(['account_number' => $getAccountNumber]);
         return $account->getBalance();
     }
+
+    public function updateBalance(?string $getAccountNumber, ?float $newBalance): void
+    {
+        $account = $this->findOneBy(['account_number' => $getAccountNumber]);
+        $account->setBalance($newBalance);
+        $this->_em->persist($account);
+        $this->_em->flush();
+    }
+
+    public function getByTypeAndOwnerId(?string $type, ?string $ownerId): ?Account
+    {
+        return $this->findOneBy(['account_type' => $type, 'owner' => $ownerId]);
+    }
+
 }

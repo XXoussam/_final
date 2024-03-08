@@ -1,0 +1,33 @@
+{% block body %}
+    <table border="1" style="width: 100%"  class="table table-striped">
+        <thead  class="thead-dark">
+        <tr>
+
+            <th>
+                pret
+            </th>
+            <th scope="col">mois</th>
+            <th scope="col">Montant paye</th>
+            <th scope="col">perode retard</th>
+
+        </tr>
+
+        </thead>
+        <tbody>
+        {%for  i in  pret %}
+            {% if i.Status == true  %}
+                <tr><th>{{i.rmb}}</th>
+                    <th>{{ i.Mois }}</th>
+                    <th>{{i.MontantPaye}}</th>
+                    <th>{{i.PeriodeRetard}}</th>
+
+
+
+                </tr>
+            {% endif %}
+
+        {% endfor %}
+
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'clientdash/index.html.twig' %}
+
+{% block body %}
+<main id="main" class="main">
+  <a href="{{path('addd')}}" class="btn btn-primary">add</a>
+
+
+  <div id="data">
+    {% include 'clientdash/pret/table.html.twig' %}
+  </div>
+</main>
+
+{% endblock %}
+{% block javascripts %}
+  <script>
+    window.onload=()=>{
+      const FilterForm = document.querySelector("#filter")
+      document.querySelectorAll("#filter input").forEach(input=>{
+        input.addEventListener("change",()=>{
+          const Form=new FormData(FilterForm)
+          const Params= new URLSearchParams()
+          Form.forEach((value,key)=>{
+            Params.append(key,value)
+
+          })
+          const Url = new URL(window.location.href)
+          console.log(Url)
+
+
+          fetch(Url.pathname + "?" + Params.toString() + "&ajax=1", {
+            headers: {
+              "X-Requested-With": "XMLHttpRequest"
+            }
+          }).then(response =>
+                  response.json()
+          ).then(data => {
+
+                    const main1=document.querySelector("#data")
+
+                    main1.innerHTML=data.data;
+
+                  }
+          ).catch(e => alert(e))
+        })
+      })}
+    </script>
+{% endblock %}

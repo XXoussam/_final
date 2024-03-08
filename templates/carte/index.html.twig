@@ -1,0 +1,43 @@
+{% extends 'clientdash/index.html.twig' %}
+
+{% block body %}
+    <h1>Carte index</h1>
+    <main id="main" class="main">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>NumC</th>
+                <th>Plafond</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for carte in cartes %}
+            <tr>
+                <td>{{ carte.id }}</td>
+                <td>{{ carte.numC }}</td>
+                <td>{{ carte.plafond }}</td>
+                <td>
+                    <a class="btn btn-primary" href="{{ path('app_carte_show', {'id': carte.id}) }}">show</a>
+                    <a class="btn btn-primary" href="{{ path('app_carte_edit', {'id': carte.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-primary" href="{{ path('app_carte_new') }}">Create new</a>
+<br>
+<br>
+        <a href="{{ path('contact.index') }}" style="cursor: pointer;font-size: 1rem" class="ri-mail-add-fill">Send mail to Responsible Carte ?</a>
+        <br>
+        <a href="{{ path('send_sms') }}" style="cursor: pointer;font-size: 1rem" class="ri-message-2-fill">Send SMS to Responsible Carte ?</a>
+
+    </main>
+{% endblock %}

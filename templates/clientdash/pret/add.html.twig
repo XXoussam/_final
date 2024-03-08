@@ -1,0 +1,44 @@
+{% extends 'clientdash/index.html.twig' %}
+
+
+
+{% block body %}
+    <main id="main" class="main" xmlns="http://www.w3.org/1999/html">
+    <div class="container">
+        {% for message in app.flashes('failed') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <h2>demander pret  </h2>
+        {{ form_start(form,{'attr': {'novalidate': 'novalidate'}} ) }}
+        <div class="form-group">
+
+            {{ form_row(form.Type, {'attr': {'class': 'form-control mb-3'}}) }}
+            <label>Montant(TND)</label>
+           {{ form_widget(form.Montant,  {'attr': {'class': 'form-control mb-2'}}) }}
+            <label>Periode(Ans)</label>
+            {{ form_widget(form.Periode, {'attr': {'class': 'form-control mb-2'}})}}
+
+
+
+            <div style="display: none">{{ form_widget(form.Interet,{'attr': {'class': 'form-control mb-3'}}) }}</div>
+
+            {{ form_row(form.description,{'attr': {'class': 'form-control'}} ) }}
+            <div style="display: none">{{ form_row(form.Status,{'attr': {'class': 'form-control mb-3'}}) }}</div>
+            <div style="display: none">{{ form_row(form.PretId,{'attr': {'class': 'form-control mb-3'}}) }}</div>
+            <br/>
+            <br/>
+           
+
+        </div>
+        <br/>
+
+        <button type="submit" class="btn btn-primary ">submit</button>
+        <a href="{{path('pret')}}" class="btn btn-primary">liste des demandes</a>
+        {{form_end(form)}}
+
+    </div>
+    </main>
+{% endblock %}

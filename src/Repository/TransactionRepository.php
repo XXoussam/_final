@@ -45,13 +45,66 @@ class TransactionRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
-    public function findByAccountNumber(string $string)
+    public function findByAccountNumber(string $string=null, $date1 = null, $date2 = null)
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.account_number = :val')
-            ->setParameter('val', $string)
-            ->getQuery()
-            ->getResult()
-        ;
+        $query= $this->createQueryBuilder('t');
+        if($string!=null) {
+            $query->andWhere('t.account_number = :val')
+                ->setParameter('val', $string);
+
+        }
+        if ($date1 != null) {
+            $query->andWhere('t.created_at > :date1')
+                ->setParameter('date1', $date1);
+        }
+        if (($date2 != null)) {
+            if (($date1 == null) or ($date2 > $date1)) {
+                $query->andWhere('t.created_at < :date2')
+                    ->setParameter('date2', $date2);
+            }
+
+        }
+        return $query->orderBy('t.created_at', 'DESC')
+            ->getQuery()->getResult();
     }
+
+    public function findByAccountNumberDesc(string $string=null)
+    {
+        $query= $this->createQueryBuilder('t');
+        if($string!=null) {
+            $query->andWhere('t.account_number = :val')
+                ->setParameter('val', $string);
+        }
+
+
+
+        return $query->orderBy('t.created_at','DESC')->getQuery()->getResult();
+    }
+
+    public function findByAccountNumberINC(string $string=null)
+    {
+        $query= $this->createQueryBuilder('t');
+        if($string!=null) {
+            $query->andWhere('t.account_number = :val')
+                ->setParameter('val', $string);
+        }
+
+
+
+        return $query->orderBy('t.created_at')->getQuery()->getResult();
+    }
+
+    public function findListById($id=null): array
+    {
+        $req=$this->createQueryBuilder('t');
+        if($id != null) {
+
+            $req->andWhere('t.idCompte = :val')
+                ->setParameter('val', $id);
+        }
+
+        return $req->getQuery()->getResult();
+    }
+
+
 }

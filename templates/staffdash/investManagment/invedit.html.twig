@@ -1,0 +1,34 @@
+{% extends 'clientdash/index.html.twig' %}
+
+{% block body %}
+    <main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>investment edit</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('staffmaninv_app') }}">ivestList</a></li>
+
+                <li class="breadcrumb-item active">investment edit</li>
+            </ol>
+        </nav>
+    </div>
+        <section class="section">
+            <h1>Edit service</h1>
+
+            {{ form_start(f,{'attr': {'novalidate': 'novalidate'}} ) }}
+            {{ form_row(f.nomInvest) }}
+            {{ form_row(f.photo) }}
+            {{ form_row(f.descriptionInvest) }}
+
+
+
+
+            <button type="submit" class="btn btn-primary">Update invest</button>
+            {{ form_end(f) }}
+
+            <a href="{{ path('staffmaninv_app') }}" class="btn btn-primary mb-3">back to services</a>
+        </section>
+
+    </main>
+{% endblock %}

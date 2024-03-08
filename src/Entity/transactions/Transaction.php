@@ -37,6 +37,9 @@ class Transaction
     #[ORM\Column(length: 255)]
     private ?string $receiver_account_number = null;
 
+    #[ORM\OneToOne(mappedBy: 'idTransaction', cascade: ['persist', 'remove'])]
+    private ?Facture $facture = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -141,5 +144,22 @@ class Transaction
     public function __toString(): string
     {
         return $this->id;
+    }
+
+    public function getFacture(): ?Facture
+    {
+        return $this->facture;
+    }
+
+    public function setFacture(Facture $facture): static
+    {
+        // set the owning side of the relation if necessary
+        if ($facture->getIdTransaction() !== $this) {
+            $facture->setIdTransaction($this);
+        }
+
+        $this->facture = $facture;
+
+        return $this;
     }
 }

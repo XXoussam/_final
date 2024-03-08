@@ -1,0 +1,423 @@
+{% extends 'clientdash/index.html.twig' %}
+
+{% block body %}
+    <style>
+        /* ---------------------------------------------------------
+  HTML5 Main Template
+---------------------------------------------------------*/
+
+        /* colors */
+        :root {
+            --main: #32c800;
+            --main-dark: #6eb656;
+            --heading-green1: #70b359;
+            --heading-green2: #5ece38;
+            --heading-green3: #5ba243;
+            --white: #fff;
+            --black: #000;
+            --gray0: #f5f5f5;
+            --gray1: #dedede;
+            --gray2: #2c3138;
+            --gray3: #26292f;
+            --gray4: #212329;
+        }
+
+        .light {
+            --bg-nav: linear-gradient(to right, var(--heading-green1), var(--heading-green2));
+            --bg: var(--gray0);
+            --bg-inputs: var(--white);
+            --main-color: var(--main);
+            --title: var(--white);
+            --txt: var(--gray4 );
+            --input: var(--white);
+            --linkBG: var(--white)
+        }
+
+        .dark {
+            --bg-nav: linear-gradient(to right, var(--heading-green3), var(--heading-green1));
+            --bg: var(--gray4  );
+            --bg-inputs: var(--gray3);
+            --main-color: var(--main-dark);
+            --title: var(--gray1);
+            --txt: var(--gray0);
+            --input: var(--gray1);
+            --linkBG: var(--gray2)
+        }
+
+        body {
+            background: var(--bg);
+            transition: background 600ms ease-in-out, color 1000ms ease-in-out;
+        }
+
+        .toggle-btns {
+            margin: 1rem 1rem -1rem 0;
+        }
+
+        .toggle-btns a {
+            text-decoration: none;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            padding: 2px 3px 5px 3px;
+            position: relative;
+            background-color: var(--linkBG);
+            transition: all 200ms ease-in;
+        }
+
+        .toggle-btns a:hover {
+            background-color: var(--main-color)
+        }
+
+        .container {
+            min-height: 90vh;
+        }
+
+        h1 {
+            background: var(--bg-nav);
+            box-shadow: rgba(0, 0, 0, 0.05) 0px 3px 15px 0px;
+            color: var(--title);
+            border-radius: 4px;
+            padding: 0.5rem 0;
+            font-size: 1.8rem;
+        }
+
+        .inputs {
+            padding: 1rem;
+            border-radius: 4px;
+            background-color: var(--bg-inputs);
+            box-shadow: rgba(0, 0, 0, 0.03) 0px 3px 15px 0px;
+        }
+
+        .inputs h2 {
+            font-size: 1.65rem;
+            color: var(--main-color);
+        }
+
+        .inputs h2 .far,
+        .inputs h2 .fas {
+            font-size: 1.25rem;
+            position: relative;
+            top: -1px;
+            color: var(--main-color);
+        }
+
+        .fas,
+        .far {
+            font-size: 0.85rem;
+            color: var(--main-color);
+        }
+
+        label {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--txt);
+        }
+
+        input {
+            background-color: var(--input) !important;
+        }
+
+        #report-section,
+        #yearBreakdow {
+            opacity: 0;
+            height: 0;
+            transition: all 400ms ease;
+        }
+
+        .inputs h3 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--txt);
+        }
+
+        .inputs h3 span {
+            font-weight: 500;
+        }
+
+        #myChart {
+            height: 300px;
+        }
+
+        #breakdow p {
+            color: var(--main-color);
+            font-size: 0.9rem;
+        }
+
+        #breakdow p span {
+            color: var(--txt);
+            font-size: 1rem;
+        }
+
+
+        p.copyright {
+            color: var(--txt);
+        }
+
+    </style>
+
+    <main id="main" class="main">
+
+        <div class="pagetitle">
+            <h1>Real State</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('client_app') }}">Home</a></li>
+
+                    <li class="breadcrumb-item active">Real State</li>
+                </ol>
+            </nav>
+        </div>
+        <section class="section">
+
+            <h1>details of dubai real state invest</h1>
+
+
+
+
+            <head>
+                <meta charset="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+                <meta name="description" content="Investment Calculator" />
+                <title>Investment Calculator</title>
+                <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+                <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+                <link rel="stylesheet" href="{{ asset('dependency/bootstrap.min.css') }}" media="all" />
+                <link rel="stylesheet" href="{{ asset('dependency/fontawesome.min.css') }}" media="all" />
+                <link rel="stylesheet" href="/public/css/style1.css" media="all" />
+            </head>
+
+            <body class="dark">
+
+            <!-- TODOS:
+                add tooltips
+            -->
+
+            <div class="toggle-btns text-right">
+                <a id="toggleLight" href="javascript:void(0)">☀</a>
+                <a id="toggleDark" href="javascript:void(0)">🌑</a>
+            </div>
+
+            <div class="container">
+                <h1 class="text-center mb-3">Investment Calculator</h1>
+
+                <div class="col-md-12 inputs">
+                    <h2 class="text-center mb-3"><i class="far fa-money-bill-alt"></i> Input Amounts</h2>
+                    <form>
+                        <div class="row">
+                            <div class="col-sm-6 col-md-3">
+                                <label for="startingBal"><i class="fas fa-dollar-sign"></i> Starting Balance</label>
+                                <input type="number" class="form-control" id="startingBalance" value="1000" min="1"
+                                       max="999999999">
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <label for="expectedReturn"><i class="fas fa-percentage"></i> Expected Return (%)</label>
+                                <input type="number" class="form-control" id="expectedReturn" value="6" min="1" max="100">
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <label for="monthlyDep"><i class="far fa-calendar-alt"></i> Monthly Deposit</label>
+                                <input type="number" class="form-control" id="monthlyDeposit" value="100" min="1"
+                                       max="999999999">
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <label for="duration"><i class="far fa-clock"></i> Duration (years)</label>
+                                <input type="number" class="form-control" id="duration" value="5" min="1" max="999">
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <button type="submit" class="btn btn-primary my-4 m-auto" id="submit">
+                                Calculate Balance
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-md-12 inputs mt-4" id="report-section">
+                    <h2 class="text-center mb-3"><i class="far fa-chart-bar"></i> Growth Chart</h2>
+                    <h3 class="text-center mb-3" id="totalValue"></h3>
+                    <h5 class="chartDiv"></h5>
+                    <div id="chartContainer">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="col-md-12 inputs mt-4" id="yearBreakdow">
+                    <h2 class="text-center mb-3"><i class="fas fa-chart-line"></i> Year Amount</h2>
+                    <div class="row" id="breakdow"></div>
+                </div>
+            </div>
+
+
+
+            <script src="{{ asset('dependency/chartjs.min.js') }}"></script>
+
+            </body>
+
+
+
+
+
+            <a href="{{ path('portadd_app') }}" class="btn btn-primary mb-3">Add to Portfolio</a>
+        </section>
+
+    </main>
+
+    <script>
+        // Create event listener on submit button
+
+        const submit = document.getElementById('submit')
+
+        submit.addEventListener('click', (e) => {
+            calculate(e)
+            submit.innerHTML = 'Re-Calculate Value'
+        })
+
+        function calculate(e) {
+            e.preventDefault()
+
+            let labels = []
+            let balances = []
+
+            let startingBalance = parseInt(document.querySelector('#startingBalance').value)
+            const expectedReturn = parseInt(document.querySelector('#expectedReturn').value) / 100
+            const monthlyDeposit = parseInt(document.querySelector('#monthlyDeposit').value)
+            const duration = parseInt(document.querySelector('#duration').value)
+            const monthlyReturn = expectedReturn / 12
+
+            if (!startingBalance || !expectedReturn || !monthlyDeposit || !duration) {
+                return
+            }
+
+            showGrowthDiv()
+            removePreviousNumbers()
+            buildValues(labels, balances, duration, startingBalance, monthlyReturn, monthlyDeposit)
+            createChart(labels, balances)
+        }
+
+        // Show content
+        function showGrowthDiv() {
+            document.querySelector('#report-section').style.opacity = 1
+            document.querySelector('#report-section').style.height = 'inherit'
+            document.querySelector('#yearBreakdow').style.opacity = 1
+            document.querySelector('#yearBreakdow').style.height = 'inherit'
+        }
+
+        // remove previous values
+        function removePreviousNumbers() {
+            document.querySelectorAll('#breakdow p').forEach(
+                (elem) => {
+                    elem.remove()
+                }
+            )
+        }
+
+        // Loop through items to update starting balance and build
+        function buildValues(labels, balances, duration, startingBalance, monthlyReturn, monthlyDeposit) {
+            for (let i = 0; i <= duration * 12; i++) {
+
+                startingBalance = startingBalance * (1 + monthlyReturn) + monthlyDeposit
+                const newDiv = document.createElement('p');
+                newDiv.classList = 'text-center col-sm-4 col-md-3'
+
+                if (i % 12 === 0) {
+                    const year = i / 12
+                    balances.push(startingBalance.toFixed(2))
+                    labels.push(`Year ${year}`)
+
+                    balanceEnd = Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 2,
+                    }).format(startingBalance)
+
+                    newDiv.innerHTML = `Year ${year} <span> ${balanceEnd} </span>`
+                    breakdow.appendChild(newDiv)
+                }
+            }
+            document.querySelector('#totalValue').innerHTML = `Total Value after ${duration} years: <span>${balanceEnd}</span>`
+        }
+
+        // Create chart
+        function createChart(labels, balances) {
+            // Destroy previous canvas
+            document.getElementById('growthChart').remove()
+
+            // Create new canvas
+            let canvas = document.createElement('canvas')
+            canvas.setAttribute('id', 'growthChart')
+            document.querySelector('#chartContainer').appendChild(canvas)
+
+            // Fill canvas with chart
+            var ctx = document.getElementById('growthChart').getContext('2d')
+            var growthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Growth',
+                        data: balances,
+                        borderColor: 'rgb(50, 200, 0)',
+                        backgroundColor: 'rgba(50, 200, 0, .3)',
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        hoverRadius: 4,
+                        hoverBorderWidth: 2,
+                        hitRadius: 2,
+                        pointStyle: 'circle',
+                        pointBackgroundColor: 'rgb(50, 200, 0)'
+                    },],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio:4,
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: false,
+                                fontColor: 'rgb(50, 200, 0)',
+                                beginAtZero: true
+                            },
+                        },],
+                        xAxes: [{
+                            ticks: {
+                                beginAtZero: false,
+                                fontColor: 'rgb(50, 200, 0)',
+
+                            },
+                        },],
+                    },
+                    legend: {
+                        display: false,
+                    },
+                },
+            })
+        }
+
+
+
+
+        // DOM Elements
+        const body = document.body;
+        const darkButton = document.getElementById("toggleDark");
+        const lightButton = document.getElementById("toggleLight");
+
+        // Apply the cached theme on reload
+        const theme = localStorage.getItem("theme");
+        if (theme) {
+            body.classList.add(theme);
+        }
+
+        // Button Event Handlers
+        darkButton.addEventListener("click", (e) => {
+            e.preventDefault;
+            body.classList.replace("light", "dark");
+            localStorage.setItem("theme", "dark");
+        });
+
+        lightButton.addEventListener("click", (e) => {
+            e.preventDefault;
+            body.classList.replace("dark", "light");
+            localStorage.setItem("theme", "light");
+        });
+
+    </script>
+{% endblock %}

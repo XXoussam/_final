@@ -1,0 +1,22 @@
+{% extends 'clientdash/index.html.twig' %}
+
+
+
+{% block body %}
+    <main id="main" class="main">
+
+
+        <div class="container">
+
+
+            {{ form_start(form, {'attr': {'class': 'form'}}) }}
+            {{ form_row(form.Mois, {'attr': {'class': 'form-control mb-3'}}) }}
+            {{ form_row(form.MontantPaye, {'attr': {'class': 'form-control mb-2'}}) }}
+            {{ form_row(form.Periode_Retard, {'attr': {'class': 'form-control mb-3'}}) }}
+            {{ form_row(form.rmb, {'attr': {'class': 'form-control mb-3'}}) }}
+
+            <button type="submit" class="btn btn-primary">Add</button>
+            {{ form_end(form) }}
+        </div>
+    </main>
+{% endblock %}

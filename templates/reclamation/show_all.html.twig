@@ -1,0 +1,28 @@
+{% extends 'clientdash/index.html.twig' %}
+
+{% block body %}
+<main id="main">
+    <h2>Reclamations</h2>
+    <table class="table bold">
+        <thead>
+            <tr>
+                <th>description</th>
+                <th>type_reclamation</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for recl in reclamations%}
+                <tr>
+                    <td>{{ recl.getDescription }}</td>
+                    <td>{{ recl.getTypeReclamation }}</td>
+                    <td>
+                        <a href="{{ path('reclamation_edit', {'id': recl.id}) }}">Ver</a>
+                        {#<a href="{{ path('', {'id': recl.id}) }}">Editar</a>#}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</main>
+{% endblock %}
+

@@ -57,9 +57,12 @@ security:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/financialHub.com/home, roles: ROLE_ADMIN }
         - { path: ^/financialHub.com/client/*, roles: ROLE_CLIENT }
+        - { path: ^/financialHub.com/crypto/*, roles: ROLE_CLIENT }
+        - { path: ^//financialHub.com/reclamtion/*, roles: ROLE_CLIENT }
         - { path: ^//financialHub.com/responsible/account/home, roles: ROLE_RESPONSIBLE_ACCOUNT }
         - { path: ^/financialHub.com/responsible/clientele/home, roles: ROLE_RESPONSIBLE_CLIENTELE }
         - { path: ^/financialHub.com/responsible/investment/home, roles: ROLE_RESPONSIBLE_INVESTMENT }
+        - { path: ^//financialHub.com/loan_management/*, roles: ROLE_RESPONSIBLE_INVESTMENT }
         - { path: ^/financialHub.com/responsible/loan/home, roles: ROLE_RESPONSIBLE_LOAN }
 
 when@test:

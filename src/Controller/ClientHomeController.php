@@ -50,8 +50,9 @@ class ClientHomeController extends AbstractController
     #[Route('/my_accounts',name:'accounts')]
     public function allAccounts(AppExtension $appExtension):Response{
 
+        dump($appExtension->getClient());
         $list_account = $appExtension->getClient()->getListAccount()->toArray();
-        //dump($list_account);
+
         dump($appExtension->getClient());
         return $this->render('clientdash/accounts/client-accounts.html.twig',[
             'list_account' => $list_account

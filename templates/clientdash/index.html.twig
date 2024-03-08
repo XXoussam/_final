@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+
     <meta charset="UTF-8">
     <title>{% block title %}Welcome!{% endblock %}</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
@@ -207,7 +209,7 @@
 
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                         <img src="{{ asset('assets/img/anwer.jpg') }}" alt="Profile" class="rounded-circle">
-                        <span class="d-none d-md-block dropdown-toggle ps-2">{{ get_client().lastName }}</span>
+                        <span class="d-none d-md-block dropdown-toggle ps-2">{#{{ get_client().lastName }}#}</span>
                     </a><!-- End Profile Iamge Icon -->
 
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
@@ -263,7 +265,93 @@
 {% block sidebar %}
 
     <aside id="sidebar" class="sidebar">
+        {% if is_granted('ROLE_RESPONSIBLE_INVESTMENT') %}
+            <ul class="sidebar-nav" id="sidebar-nav">
 
+                <li class="nav-item">
+                    <a class="nav-link {{ app.request.attributes.get('_route') == 'staffmaninv_app' ? '' : 'collapsed' }}" href="{{ path('staffmaninv_app') }}">
+                        <i class="bi bi-grid"></i>
+                        <span>investments</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed"  href="#">
+                        <i class="bi bi-menu-button-wide"></i>
+                        <span>Investors</span>
+                    </a>
+                </li>
+            </ul>
+        {% endif %}
+        {% if is_granted('ROLE_RESPONSIBLE_CLIENTELE') %}
+            <ul class="sidebar-nav" id="sidebar-nav">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-grid"></i>
+                        <span>Money Flow</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"  href="{{ path('app_transaction_list_Agent') }}">
+                        <i class="bi bi-menu-button-wide"></i>
+                        <span>Clients Transactions</span>
+                    </a>
+                </li>
+            </ul>
+        {% endif %}
+
+        {% if is_granted('ROLE_RESPONSIBLE_LOAN')%}
+            <ul class="sidebar-nav" id="sidebar-nav">
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse">
+                        <i class="bi bi-journal-text"></i>
+                        <span>Managment Pret</span>
+
+                    </a>
+                    <ul  id="tables-nav" class="sub-menu">
+                        <li style="margin-left: 15px;margin-bottom: 10px"><a href="{{ path('loan_managementprett') }}">
+                                liste attente
+                            </a>
+                        </li>
+                        <li style="margin-left: 15px;margin-bottom: 10px">
+                            <a href="{{ path('loan_managementlistra') }}" >
+                                accepter
+                            </a>
+                        </li>
+                        <li style="margin-left: 15px;margin-bottom: 10px">
+                            <a href="{{ path('loan_managementlistrr') }}" >
+                                refuser
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <!-- End Forms Nav -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" >
+                        <i class="bi bi-journal-text"></i>
+                        <span>Managment Remborssement</span>
+
+                    </a>
+                    <ul  id="tables-nav" class="sub-menu">
+                        <li style="margin-left: 15px;margin-bottom: 10px"><a href="{{ path('loan_managementlistr') }}">
+                                liste
+                            </a>
+                        </li>
+                        <li style="margin-left: 15px;margin-bottom: 10px">
+                            <a href="{{ path('loan_managementlistc') }}" >
+                                complet
+                            </a>
+                        </li>
+
+
+                    </ul>
+
+                </li>
+            </ul>
+        {% endif %}
+    {% if is_granted('ROLE_CLIENT') %}
         <ul class="sidebar-nav" id="sidebar-nav">
 
             <li class="nav-item">
@@ -273,23 +361,23 @@
                 </a>
             </li><!-- End Dashboard Nav -->
 
-            <li class="nav-item">
-                <a class="nav-link {{ app.request.attributes.get('_route') == 'app_clientaccounts' ? '' : 'collapsed' }}" href="{{ path('app_clientaccounts') }}">
-                    <i class="bi bi-menu-button-wide"></i>
-                    <span>My Account</span>
-                </a>
-            </li>
-            <!-- End Components Nav -->
 
+                <li class="nav-item">
+                    <a class="nav-link {{ app.request.attributes.get('_route') == 'app_clientaccounts' ? '' : 'collapsed' }}" href="{{ path('app_clientaccounts') }}">
+                        <i class="bi bi-menu-button-wide"></i>
+                        <span>My Account</span>
+                    </a>
+                </li>
+
+            <!-- End Components Nav -->
             <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-journal-text"></i>
-                    <span>Demande Pret</span>
+                <a class="nav-link {{ app.request.attributes.get('_route') == 'addd' ? '' : 'collapsed' }}" href="{{ path('addd') }}">
+                    <i class="bi bi-house-door"></i>
+                    <span>Loantransactions</span>
 
                 </a>
 
             </li><!-- End Forms Nav -->
-
 
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-toggle="collapse" href="#transactions-nav" aria-expanded="false">
@@ -313,16 +401,20 @@
                             <i class="bi bi-circle"></i><span>Manage Categories</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ path('Overview') }}">
+                            <i class="bi bi-circle"></i><span>Overview</span>
+                        </a>
+                    </li>
                     <!-- Add more dropdown items here as needed -->
                 </ul>
             </li>
 
             <!-- End Tables Nav -->
-
             <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
+                <a class="nav-link {{ app.request.attributes.get('_route') == 'clientinvList_app' ? '' : 'collapsed' }}" href="{{ path('clientinvList_app') }}">
                     <i class="bi bi-bar-chart"></i>
-                    <span>investissement</span>
+                    <span>investement</span>
 
                 </a>
 
@@ -332,18 +424,17 @@
                 <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
                     <i class="bi bi-question-circle"></i>
                     <span>reclamation</span>
-
                 </a>
-
             </li>
 
             <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
+                <a class="nav-link {{ app.request.attributes.get('_route') == 'app_carte_index' ? '' : 'collapsed' }}" href="{{ path('app_carte_index') }}">
                     <i class="bi bi-card-list"></i>
                     <span>My Carte</span>
 
                 </a>
             </li>
+
 
             <li class="nav-item">
                 <a class="nav-link {{ app.request.attributes.get('_route') == 'app_crypto_space' ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#crypto-nav" aria-expanded="false">
@@ -365,7 +456,13 @@
                 </ul>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link {{ app.request.attributes.get('_route') == 'app_chat_bot' ? '' : 'collapsed' }}" href="{{ path('app_chat_bot') }}">
+                    <i class="ri-3x ri-robot-fill"></i>
+                    <span>Talk to me</span>
 
+                </a>
+            </li>
 
 
             <li class="nav-heading">autre</li>
@@ -378,7 +475,7 @@
             </li><!-- End Profile Page Nav -->
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="pages-faq.html">
+                <a class="nav-link {{ app.request.attributes.get('_route') == 'myportfolio_app' ? '' : 'collapsed' }}" href="{{ path('myportfolio_app') }}">
                     <i class="bi bi-gem"></i>
                     <span>Portfolio d'ivestisement</span>
                 </a>
@@ -400,7 +497,7 @@
             <!-- End Blank Page Nav -->
 
         </ul>
-
+    {% endif %}
     </aside><!-- End Sidebar-->
 {% endblock %}
 
@@ -411,18 +508,14 @@
 {% endblock %}
 
 {% block footer %}
-    <footer id="footer" class="footer" style="  margin-top: 30rem;">
+    <footer id="footer" class="footer">
         <div class="copyright">
             &copy; Copyright <strong><span>FinancialHub</span></strong>. All Rights Reserved
         </div>
         <div class="credits">
-            <!-- All the links in the footer should remain intact. -->
-            <!-- You can delete the links only if you purchased the pro version. -->
-            <!-- Licensing information: https://bootstrapmade.com/license/ -->
-            <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-            Designed by <a href="https://bootstrapmade.com/">codeTitans</a>
+                        Designed by <a href="https://bootstrapmade.com/">codeTitans</a>
         </div>
-    </footer><!-- End Footer -->
+    </footer>
 {% endblock %}
 
 

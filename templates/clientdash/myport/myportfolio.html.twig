@@ -1,0 +1,51 @@
+{% extends 'clientdash/index.html.twig' %}
+
+{% block body %}
+
+    <main id="main" class="main">
+
+        <div class="pagetitle">
+            <h1>Portfolio</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('client_app') }}">Home</a></li>
+
+                    <li class="breadcrumb-item active">Portfolio</li>
+                </ol>
+            </nav>
+        </div>
+        <section class="section">
+            <button><a href="{{ path('pdf_port') }}">Export PDF</a></button>
+{#            <input type="text" id="searchInput" placeholder="Search...">#}
+{#            <table id="dataTable">#}
+{#                <!-- Your table content goes here -->#}
+{#            </table>#}
+
+{#            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>#}
+{#            <script>#}
+{#                $(document).ready(function() {#}
+{#                    $('#searchInput').on('input', function() {#}
+{#                        var keyword = $(this).val();#}
+{#                        $.ajax({#}
+{#                            url: '/search',  // Assuming your Symfony route for handling search requests is '/search'#}
+{#                            method: 'POST',#}
+{#                            data: { keyword: keyword },#}
+{#                            success: function(response) {#}
+{#                                $('#dataTable').html(response);#}
+{#                            }#}
+{#                        });#}
+{#                    });#}
+{#                });#}
+{#            </script>#}
+        <h1>List of my portfolio</h1>
+
+            <div>
+                {% include 'clientdash/myport/tablePortfolio.html.twig' %}
+            </div>
+
+
+            <a href="{{ path('clientinvList_app') }}" class="btn btn-primary mb-3">Add  new Portfolio</a>
+        </section>
+
+    </main>
+{% endblock %}

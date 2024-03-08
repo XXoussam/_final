@@ -1,0 +1,33 @@
+{% block body %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+
+            <th>
+                Montant(TND)
+            </th>
+            <th>interet(%)</th>
+            <th>periode(Ans)</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+
+        </thead>
+        <tbody>
+        {%for  i in  pret %}
+            <tr><th>{{i.Montant}}</th>
+                <th>{{ i.Interet }}</th>
+                <th>{{i.periode}}</th>
+                <th>{{i.Type}}</th>
+                <th>{{i.description}}</th>
+
+                <th>
+                    <a class="btn btn-warning" href="{{path('updatee',{'id':i.id})  }}"  class="btn btn-info">update</a>
+                    <a class="btn btn-danger" href="{{path('delete',{'id':i.id})  }}"  class="btn btn-warning">delete</a></th></tr>
+
+        {% endfor %}
+
+        </tbody>
+    </table>
+{% endblock %}

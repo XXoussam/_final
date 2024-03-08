@@ -1,0 +1,45 @@
+{% extends 'clientdash/index.html.twig' %}
+
+{% block body %}
+    <main id="main" class="main">
+        <a href="{{path('loan_managementadddr')}}" class="btn btn-primary">add</a>
+        <table border=1 style="width: 100%" class="table table-striped">
+            <thead  class="thead-dark">
+            <tr>
+
+                <th>
+                    pret
+                </th>
+                <th scope="col">mois</th>
+                <th scope="col">Montant paye</th>
+                <th scope="col">perode retard</th>
+                <th scope="col">Actions</th>
+            </tr>
+
+            </thead>
+            <tbody>
+            {%for  i in  pret %}
+                {% if  i.Status==false %}
+                    <tr><th>{{i.rmb}}</th>
+                        <th>{{ i.Mois }}</th>
+                        <th>{{i.MontantPaye}}</th>
+                        <th>{{i.PeriodeRetard}}</th>
+
+
+
+
+                        <th>
+                            <a href="{{path('loan_managementupdateer',{'id':i.id})  }}"  class="btn btn-info">update</a>
+                            <form method="post" action="{{ path('loan_managementcomplet', {'id': i.id}) }}">
+                                <button type="submit" class="btn btn-success">complet</button>
+                            </form></th>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+    </main>
+
+{% endblock %}

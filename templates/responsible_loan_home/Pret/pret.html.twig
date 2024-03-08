@@ -1,0 +1,124 @@
+{% extends 'clientdash/index.html.twig' %}
+
+{% block body %}
+    <main id="main" class="main">
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+
+                <th>
+                    Montant
+                </th>
+                <th>interet(%)</th>
+                <th>periode</th>
+                <th>Type</th>
+                <th>Description</th>
+
+            </tr>
+
+            </thead>
+            <tbody>
+            {%for  i in  pret %}
+                {% if i.accepte == false and i.refuse==false %}
+
+                <tr><th>{{i.Montant}}</th>
+                    <th>{{ i.Interet }}</th>
+                    <th>{{i.periode}}</th>
+                    <th>{{i.Type}}</th>
+                    <th>{{i.description}}</th>
+
+                    <th>
+                        <form method="post" action="{{ path('loan_managementaccepte', {'id': i.id}) }}">
+                            <button type="submit" class="btn btn-success">Accepter</button>
+                        </form>
+
+                        <form method="post" action="{{ path('loan_managementrefuse', {'id': i.id}) }}">
+                            <button type="submit" class="btn btn-danger">Refuser</button>
+                        </form>
+
+
+                        </th></tr>
+                {% endif %}
+
+
+            {% endfor %}
+
+            </tbody>
+        </table>
+        <div class="card">
+            <div class="filter">
+                <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                        <h6>Filter</h6>
+                    </li>
+
+                    <li><a class="dropdown-item" href="#">Today</a></li>
+                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                </ul>
+            </div>
+
+            <div class="card-body pb-0">
+                <h5 class="card-title">Static Type   </h5>
+
+                <div id="trafficChart" style="min-height: 400px;" class="echart"></div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                        const p={{ p|json_encode|raw }}
+                        const pe={{ pe|json_encode|raw }}
+                        const e={{ e|json_encode|raw }}
+
+                            echarts.init(document.querySelector("#trafficChart")).setOption({
+                                tooltip: {
+                                    trigger: 'item'
+                                },
+                                legend: {
+                                    top: '5%',
+                                    left: 'center'
+                                },
+                                series: [{
+                                    name: 'Access From',
+                                    type: 'pie',
+                                    radius: ['40%', '70%'],
+                                    avoidLabelOverlap: false,
+                                    label: {
+                                        show: false,
+                                        position: 'center'
+                                    },
+                                    emphasis: {
+                                        label: {
+                                            show: true,
+                                            fontSize: '18',
+                                            fontWeight: 'bold'
+                                        }
+                                    },
+                                    labelLine: {
+                                        show: false
+                                    },
+                                    data: [{
+                                        value: p.length,
+                                        name: 'Personnel'
+                                    },
+                                        {
+                                            value: e.length,
+                                            name: 'Entreprise'
+                                        },
+                                        {
+                                            value: pe.length,
+                                            name: 'Petit-Business'
+                                        },
+
+                                    ]
+                                }]
+                            });
+                    });
+                </script>
+
+            </div>
+        </div><!-- End Website Traf
+    </main>
+
+{% endblock %}

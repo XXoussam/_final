@@ -43,6 +43,20 @@ class Client extends User
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Account::class)]
     private Collection $list_account;
 
+    #[ORM\OneToMany(mappedBy: 'PretId', targetEntity: Pret::class)]
+    private Collection $prets;
+
+
+    public function getPrets(): Collection
+    {
+        return $this->prets;
+    }
+
+    public function setPrets(Collection $prets): void
+    {
+        $this->prets = $prets;
+    }
+
     public function __construct()
     {
         $this->list_account = new ArrayCollection();
@@ -194,6 +208,12 @@ class Client extends User
         }
 
         return $this;
+    }
+
+
+    public function __toString()
+    {
+        return (string) $this->getId();
     }
 
 }

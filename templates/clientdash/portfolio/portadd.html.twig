@@ -1,0 +1,39 @@
+{% extends 'clientdash/index.html.twig' %}
+
+{% block body %}
+
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>portfolio</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('client_app') }}">Home</a></li>
+
+                <li class="breadcrumb-item active">portfolio</li>
+            </ol>
+        </nav>
+    </div>
+
+    <section class="section">
+
+        <h1>Add portfolio</h1>
+
+        {{ form_start(f,{'attr': {'novalidate': 'novalidate'}} ) }}
+        {{ form_row(f.nomPortfolio) }}
+        {{ form_row(f.FHIid) }}
+        {{ form_row(f.montantToInvest) }}
+
+
+
+
+
+        <button type="submit" class="btn btn-primary">Add portfolio</button>
+        {{ form_end(f) }}
+
+
+        <a href="{{ path('portdetal_app') }}" class="btn btn-primary mb-3">back to Details</a>
+    </section>
+
+</main>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'clientdash/index.html.twig' %}
+
+{% block body %}
+    <main id="main">
+    <h1>Edit Carte</h1>
+        <a href="{{ path('app_carte_index') }}" class="btn btn-success">back to list</a>
+        <br>
+        <br>
+    {{ include('carte/_form.html.twig', {'button_label': 'Update'}) }}
+
+    </main>
+{% endblock %}

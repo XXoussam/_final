@@ -1,0 +1,10 @@
+{% extends 'clientdash/index.html.twig' %}
+{% block body %}
+    <main id="main" class="main">
+
+        {% include "responsible_loan_home/Rembourssement/table.html.twig" %}
+
+        <button class="btn btn-danger"><a href="{{ path('loan_managementpdf') }}">PDF</a></button>
+    </main>
+
+{% endblock %}

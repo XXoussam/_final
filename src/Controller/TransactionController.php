@@ -2,13 +2,22 @@
 
 namespace App\Controller;
 
+use App\Entity\enum\AccountType;
+use App\Entity\transactions\Facture;
 use App\Entity\transactions\SendMoneyFormType;
 use App\Entity\transactions\Transaction;
 use App\Repository\AccountRepository;
+use App\Repository\CompteRepository;
+use App\Repository\FactureRepository;
 use App\Repository\TransactionRepository;
 use App\services\AppExtension;
+use Doctrine\Persistence\ManagerRegistry;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Exception;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,7 +26,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class TransactionController extends AbstractController
 {
     /**
-        * this could be the add transaction page and the form to add a transaction
+     * this could be the add transaction page and the form to add a transaction
      */
     #[Route('/add', name: 'app_add_transaction')]
     public function add(Request $request,AppExtension $appExtension,AccountRepository $accountRepository): Response
@@ -78,7 +87,7 @@ class TransactionController extends AbstractController
                     'controller_name' => 'TransactionController',
                     'form' => $form->createView(),
                     'response' => $response,
-                     'clientAccountTypes' => $clientAccountTypes
+                    'clientAccountTypes' => $clientAccountTypes
                 ]);
             }
 
@@ -157,18 +166,50 @@ class TransactionController extends AbstractController
      * facture or a transaction type
      */
     #[Route('/show_all', name: 'app_transaction_list')]
-    public function list(TransactionRepository $transactionRepository,AppExtension $appExtension): Response
+    public function list(TransactionRepository $transactionRepository,AppExtension $appExtension,Request $req,PaginatorInterface $page):Response
     {
         $myAccounts = $appExtension->getClient()->getListAccount()->toArray();
-        $myTransactions = [];
+        $length_all = 0;
         foreach ($myAccounts as $account){
-            $myTransactions = array_merge($myTransactions,$transactionRepository->findByAccountNumber($account->getAccountNumber()));
+            $length_all += count($transactionRepository->findByAccountNumber($account->getAccountNumber()));
+        }
+
+        $myTransactions = [];
+        $date1=$req->get('date1');
+        $date2=$req->get('date2');
+        foreach ($myAccounts as $account){
+            $myTransactions = array_merge($myTransactions,$transactionRepository->findByAccountNumber($account->getAccountNumber(),$date1,$date2));
         }
         dump($myTransactions);
+        $myTransactions=$page->paginate(
+            $myTransactions,
+            $req->query->getInt('page',1),40000
+        );
+        if($req->get('ajax')){
+            return new JsonResponse([
+                'content'=>$this->renderView('transaction/tableTransactionsClient.html.twig',[
+                    'transactions' => $myTransactions,
+                    'date1'=>$date1,
+                    'date2'=>$date2
+
+
+                ]),
+                'data'=>$this->renderView('Receipt/ReceiptTotal.html.twig',[
+                    'transactions' => $myTransactions,
+                    'date1'=>$date1,
+                    'date2'=>$date2,
+                ])
+
+            ]);
+        }
+
 
         return $this->render('transaction/all_transations.html.twig', [
             'controller_name' => 'TransactionController',
-            'transactions' => $myTransactions
+            'transactions' => $myTransactions,
+            'date1'=>$date1,
+            'date2'=>$date2,
+            'length_all'=>$length_all
         ]);
     }
 
@@ -194,4 +235,233 @@ class TransactionController extends AbstractController
             'controller_name' => 'TransactionController',
         ]);
     }
+
+    //Add Facture methode
+    #[Route('addFacture/{id}',name:'addF')]
+    public function addFacture(Request $req, ManagerRegistry $mg,TransactionRepository $rep,$id):Response
+    {
+        $em = $mg->getManager();
+        $facture=new Facture();
+        $transaction=$rep->find($id);
+        $facture->setIdTransaction($transaction);
+
+        $facture->setTax(1);
+        $facture->setMontantTTC($transaction->getAmount()-($transaction->getAmount()*0.01));
+
+
+
+        $em->persist($facture);
+        $em->flush();
+        return $this->redirectToRoute('app_transaction_list',[
+            "tran"=>$transaction,
+            "fac"=>$facture
+        ]);
+
+    }
+
+
+    //show Facture By idTransaction
+    #[Route('showFact/{id}',name:'showF')]
+    public function showFa($id,FactureRepository $repo,TransactionRepository $rep):Response
+    {
+        $fact=$repo->findByIDTransaction($id);
+        $tranc=$rep->find($id);
+        return $this->render('Receipt/Receipt.html.twig',['tranc'=>$tranc,'fact'=>$fact]);
+    }
+
+
+    //Exportation in PDF File
+
+    #[Route('/pdf/{id}',name:'pdf')]
+    public function pdfgenerate(Request $req,$id,FactureRepository $repo,TransactionRepository $rep):Response
+    {
+        $pdfOption = new Options();
+        $pdfOption->set('defaultFont','Arial');
+        $pdfOption->setIsRemoteEnabled(true);
+
+        $dompdf=new Dompdf($pdfOption);
+        $context= stream_context_create([
+            'ssl' => [
+                'verify_peer'=>False,
+                'verify_peer_name'=>False,
+                'allow_self_signed'=>True
+            ]
+        ]);
+        $fact=$repo->findByIDTransaction($id);
+        $tranc=$rep->find($id);
+        $compte=$tranc->getAccountNumber();
+        $dompdf->setHttpContext($context);
+        $html=$this->renderView('Receipt/ReceiptTable.html.twig',['tranc'=>$tranc,'fact'=>$fact]);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4');
+        $dompdf->render();
+        $fichier='facture°'.$fact->getId().'.pdf';
+
+        $dompdf->stream($fichier,[
+            'Attachement'=>true
+        ]);
+        return new Response();
+    }
+
+    //delete a Transaction By ID
+
+    #[Route('deleteT/{id}',name:'deleteT')]
+    public function deleteT($id,TransactionRepository $repo,FactureRepository $rep,ManagerRegistry $mg):Response
+    {
+        $facture=$rep->findByIDTransactionOrNot($id);
+        $transaction=$repo->find($id);
+        $em=$mg->getManager();
+        if($facture!=null){
+            $em->remove($facture);
+            $em->flush();
+        }
+        $em->remove($transaction);
+        $em->flush();
+        return $this->redirectToRoute('app_transaction_list');
+
+    }
+
+    //delete a Receipt by ID
+
+    #[Route('deleteF/{id}',name:'deleteF')]
+    public function deleteF($id,FactureRepository $rep,ManagerRegistry $mg,TransactionRepository $repo):Response
+    {
+        $facture=$rep->find($id);
+        $em=$mg->getManager();
+        $em->remove($facture);
+        $em->flush();
+        return $this->redirectToRoute('app_transaction_list');
+    }
+
+    #[Route('/excel',name:'ExportExcel')]
+    public function exportExcel(Request $req,TransactionRepository $rep,AppExtension $appExtension)
+    {
+        $myAccounts = $appExtension->getClient()->getListAccount()->toArray();
+
+        $date1=$req->get('date1');
+        $date2=$req->get('date2');
+        $myTransactions=$rep->findByAccountNumber($date1,$date2);
+        $filename="data".$date1."=>".$date2.".xls";
+        $fileds=array('ID','TypeTransaction','ReceiverAccount','Amount');
+        $excelData = implode("\t",array_values($fileds))."\n";
+        foreach ($myTransactions as $t){
+            $lineData =array($t->getId(),$t->getTransactionType(),$t->getReceiverAccountNumber(),$t->getAmount());
+            $excelData .=implode("\t",array_values($lineData))."\n";
+
+        }
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachement; filename=\"$filename\"");
+        echo $excelData;
+        exit();
+    }
+
+    #[Route('/Overview',name:'Overview')]
+    public function renderStat(TransactionRepository $transactionRepository,AppExtension $appExtension,Request $req,PaginatorInterface $page):Response
+    {
+        $myAccounts = $appExtension->getClient()->getListAccount()->toArray();
+        $myTransactions = [];
+        $trans=[];
+        $date1=$req->get('date1');
+        $date2=$req->get('date2');
+        foreach ($myAccounts as $account){
+            $myTransactions = array_merge($myTransactions,$transactionRepository->findByAccountNumberINC($account->getAccountNumber()));
+        }
+        dump($myTransactions);
+        $join=[];
+        $saving=[];
+        $student=[];
+        $checking=[];
+        $business=[];
+        $date=[];
+        foreach ($myTransactions as $tran){
+            if($tran->getTransactionType()=='STUDENT'){
+                $student[] = $tran->getAmount();
+            }elseif($tran->getTransactionType()=='CHECKING'){
+                $checking[] = $tran->getAmount();
+            }elseif($tran->getTransactionType()=='SAVINGS'){
+                $saving[] = $tran->getAmount();
+            }elseif ($tran->getTransactionType()=='JOINT'){
+                $join[] = $tran->getAmount();
+            }elseif ($tran->getTransactionType()=='BUSINESS'){
+                $business[] = $tran->getAmount();
+            }
+            $date[]=$tran->getCreatedAt();
+        }
+        foreach ($myAccounts as $account){
+            $trans = array_merge($trans,$transactionRepository->findByAccountNumberDesc($account->getAccountNumber()));
+        }
+        dump($trans);
+        $trans=$page->paginate(
+            $trans,
+            $req->query->getInt('page',1),10
+        );
+        return $this->render("transaction/overview.html.twig",['s'=>$student,'sa'=>$saving,'j'=>$join,'c'=>$checking,'b'=>$business,'trans'=>$trans,'date'=>$date]);
+    }
+
+    #[Route('/show_allAgent', name: 'app_transaction_list_Agent')]
+    public function listAgent(TransactionRepository $transactionRepository,AppExtension $appExtension,Request $req,PaginatorInterface $page):Response
+    {
+        $account= $req->get('account');
+
+        $myTransactions = $transactionRepository->findByAccountNumber($account);
+
+
+        dump($myTransactions);
+        $myTransactions = $page->paginate(
+            $myTransactions,
+            $req->query->getInt('page', 1), 10
+        );
+        if ($req->get('ajax')) {
+            return new JsonResponse([
+                'content' => $this->renderView('responsible_clientele_home/transactions/transactionTable.html.twig', [
+                    'transactions' => $myTransactions,
+
+
+                ])]);
+        }
+        return $this->render('responsible_clientele_home/transactions/getAllTransactions.html.twig',['transactions'=>$myTransactions]);
+
+    }
+
+    #[Route('/detail/{id}',name:'detailTransac')]
+    public function detail($id,TransactionRepository $rep):Response
+    {
+        $res=$rep->find($id);
+        return $this->render('responsible_clientele_home/transactions/detail.html.twig',[
+            'tran'=>$res
+        ]);
+    }
+
+    #[Route('/pdf/{id}',name:'pdfStaff')]
+    public function pdf(Request $req,$id,TransactionRepository $rep):Response
+    {
+        $pdfOption = new Options();
+        $pdfOption->set('defaultFont','Arial');
+        $pdfOption->setIsRemoteEnabled(true);
+
+        $dompdf=new Dompdf($pdfOption);
+        $context= stream_context_create([
+            'ssl' => [
+                'verify_peer'=>False,
+                'verify_peer_name'=>False,
+                'allow_self_signed'=>True
+            ]
+        ]);
+
+        $tranc=$rep->find($id);
+        $dompdf->setHttpContext($context);
+        $html=$this->renderView('responsible_clientele_home/transactions/detailsTable.html.twig',['tran'=>$tranc]);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4');
+        $dompdf->render();
+        $fichier='DetailsTransaction°.pdf';
+
+        $dompdf->stream($fichier,[
+            'Attachement'=>true
+        ]);
+        return new Response();
+    }
+
+
+
 }

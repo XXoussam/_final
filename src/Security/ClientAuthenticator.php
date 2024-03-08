@@ -82,7 +82,7 @@ class ClientAuthenticator extends AbstractLoginFormAuthenticator
         }
         // Provide a default redirection if no target path is set, adjust as needed
         if (in_array('ROLE_CLIENT', $token->getRoleNames())) {
-            return new RedirectResponse($this->urlGenerator->generate('app_clienthome'));
+            return new RedirectResponse($this->urlGenerator->generate('app_clientdashboard'));
         }
         if (in_array('ROLE_RESPONSIBLE_ACCOUNT', $token->getRoleNames())) {
             return new RedirectResponse($this->urlGenerator->generate('app_responsible_account_home'));

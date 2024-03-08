@@ -1,0 +1,33 @@
+{% block body %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>namePortfolio</th>
+            <th>investmentID</th>
+            <th>montantToInvest</th>
+            <th>Actions</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for portfolio in list %}
+            <tr>
+                <td>{{ portfolio.id }}</td>
+                <td>{{ portfolio.nomPortfolio }}</td>
+                <td>{{ portfolio.FHIid }}</td>
+                <td>{{ portfolio.montantToInvest }}</td>
+
+
+                <td>
+                    <a href="{{ path('portedit_app', {'id': portfolio.id}) }}" class="btn btn-primary">Edit</a>
+                    <a href="{{ path('portdelete_app', {'id': portfolio.id}) }}" class="btn btn-primary">delete</a>
+                    <a href="https://us.etrade.com/what-we-offer/investment-choices" class="btn btn-primary">invest now</a>
+
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
